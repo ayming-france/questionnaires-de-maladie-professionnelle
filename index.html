@@ -5,1654 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Questionnaires de maladie professionnelle - Ayming</title>
   <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --blue-primary: #11a9e6;
-      --blue-accent: #0da4e8;
-      --blue-dark: #00456d;
-      --gradient-blue-start: #0fa7e2;
-      --gradient-green-end: #0ab38c;
-      --gradient-brand-horizontal: linear-gradient(90deg, var(--gradient-blue-start), var(--gradient-green-end));
-      --text-dark: #0f172a;
-      --text-gray: #6b7280;
-      --text-light: #9ca3af;
-      --bg-white: #ffffff;
-      --bg-light: #f8fafc;
-      --bg-subtle: #eef2f6;
-      --overlay-blue-soft: rgba(17, 169, 230, 0.1);
-      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
-      --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
-      --shadow-lg: 0 10px 40px rgba(0,0,0,0.1);
-      --nav-width: 260px;
-      --nav-collapsed: 20px;
-    }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: 'Lato', sans-serif;
-      background: var(--bg-white);
-      color: var(--text-dark);
-      overflow: hidden;
-      height: 100vh;
-    }
-
-    /* ===== NAVIGATION ===== */
-    .chapter-nav {
-      position: fixed;
-      left: 0;
-      top: 0;
-      width: var(--nav-width);
-      height: 100vh;
-      background: var(--bg-light);
-      border-right: 1px solid var(--bg-subtle);
-      padding: 40px 24px;
-      z-index: 100;
-      display: flex;
-      flex-direction: column;
-      transform: translateX(calc(-1 * var(--nav-width) + var(--nav-collapsed)));
-      transition: transform 0.3s ease;
-    }
-
-    .chapter-nav:hover,
-    .chapter-nav.open {
-      transform: translateX(0);
-    }
-
-    .nav-toggle {
-      position: absolute;
-      right: 6px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 14px;
-      height: 20px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      gap: 3px;
-      cursor: pointer;
-      opacity: 0.3;
-      transition: opacity 0.2s;
-    }
-
-    .chapter-nav:hover .nav-toggle {
-      opacity: 0;
-    }
-
-    .nav-toggle span {
-      display: block;
-      width: 12px;
-      height: 1.5px;
-      background: var(--text-gray);
-      border-radius: 1px;
-    }
-
-    .nav-header {
-      margin-bottom: 40px;
-      padding-right: 30px;
-    }
-
-    .nav-logo {
-      height: 32px;
-      margin-bottom: 8px;
-    }
-
-    .nav-logo img {
-      height: 100%;
-      width: auto;
-    }
-
-    .nav-subtitle {
-      font-size: 11px;
-      color: var(--text-light);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      text-decoration: none;
-      transition: color 0.2s ease;
-    }
-
-    .nav-subtitle:hover {
-      color: var(--blue-accent);
-    }
-
-    .nav-section {
-      margin-bottom: 28px;
-    }
-
-    .nav-section-title {
-      font-size: 10px;
-      font-weight: 600;
-      color: var(--text-light);
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      margin-bottom: 14px;
-      padding-left: 4px;
-    }
-
-    .nav-item {
-      display: flex;
-      align-items: center;
-      padding: 10px 14px;
-      margin-bottom: 6px;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      font-size: 13px;
-      color: var(--text-gray);
-    }
-
-    .nav-item:hover {
-      background: var(--overlay-blue-soft);
-      color: var(--blue-primary);
-    }
-
-    .nav-item.active {
-      background: var(--blue-primary);
-      color: white;
-    }
-
-    .nav-item-number {
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
-      background: var(--bg-subtle);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 10px;
-      font-weight: 600;
-      margin-right: 12px;
-      flex-shrink: 0;
-    }
-
-    .nav-item.active .nav-item-number {
-      background: rgba(255,255,255,0.2);
-      color: white;
-    }
-
-    /* ===== SLIDE COUNTER ===== */
-    .slide-counter {
-      position: fixed;
-      top: 30px;
-      right: 40px;
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--text-gray);
-      z-index: 100;
-    }
-
-    .slide-counter .current {
-      color: var(--blue-accent);
-      font-weight: 600;
-    }
-
-    /* ===== PRESENTATION CONTAINER ===== */
-    .presentation {
-      width: 100vw;
-      height: 100vh;
-      overflow: hidden;
-      position: relative;
-      transition: padding-left 0.3s ease;
-      padding-left: var(--nav-collapsed);
-    }
-
-    .chapter-nav:hover ~ .presentation,
-    .chapter-nav.open ~ .presentation {
-      padding-left: var(--nav-width);
-    }
-
-    /* ===== SLIDES ===== */
-    .slide {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      padding: 60px 80px;
-      display: none;
-      opacity: 0;
-      transition: opacity 0.4s ease;
-      overflow: hidden;
-    }
-
-    .slide.active {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      opacity: 1;
-    }
-
-    .slide-inner {
-      width: 100%;
-      max-width: 1200px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      transform: scale(1.2);
-      transform-origin: center center;
-    }
-
-    /* ===== COVER SLIDE ===== */
-    .slide.cover {
-      padding: 0;
-    }
-
-    .cover-layout {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      width: 100%;
-      height: 100%;
-    }
-
-    .cover-left {
-      background: var(--gradient-brand-horizontal);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      padding: 80px;
-      position: relative;
-    }
-
-    .cover-logo {
-      position: absolute;
-      top: 50px;
-      left: 80px;
-      height: 55px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .cover-logo img {
-      height: 100%;
-      filter: brightness(0) invert(1);
-    }
-
-    .cover-title {
-      font-size: 52px;
-      font-weight: 700;
-      color: white;
-      line-height: 1.15;
-    }
-
-    .cover-subtitle {
-      font-size: 20px;
-      color: rgba(255,255,255,0.85);
-      margin-top: 20px;
-      font-weight: 400;
-    }
-
-    .cover-right {
-      position: relative;
-      overflow: hidden;
-    }
-
-    .cover-right::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 150px;
-      height: 100%;
-      background: linear-gradient(90deg, var(--gradient-green-end) 0%, transparent 100%);
-      z-index: 1;
-    }
-
-    .cover-image {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    /* ===== TYPOGRAPHY ===== */
-    .slide-title {
-      font-size: 44px;
-      font-weight: 700;
-      line-height: 1.2;
-      margin-bottom: 50px;
-      text-align: center;
-      background: linear-gradient(90deg, var(--gradient-blue-start), var(--gradient-green-end));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .title-light {
-      font-weight: 400;
-      color: var(--blue-accent);
-    }
-
-    .title-bold {
-      font-weight: 700;
-      color: var(--blue-accent);
-    }
-
-    .slide-subtitle {
-      font-size: 18px;
-      color: var(--text-gray);
-      margin-bottom: 50px;
-      font-weight: 400;
-      max-width: 900px;
-      line-height: 1.7;
-    }
-
-    /* ===== LAYOUT: SPLIT ===== */
-    .layout-split {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 80px;
-      width: 100%;
-      max-width: 1200px;
-      align-items: center;
-    }
-
-    .layout-split .content-side {
-      text-align: left;
-    }
-
-    .layout-split .content-side .slide-title {
-      text-align: left;
-      margin-bottom: 35px;
-    }
-
-    .layout-split .visual-side {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    /* ===== LAYOUT: 3 COLUMNS ===== */
-    .three-columns {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 40px;
-      width: 100%;
-      max-width: 1100px;
-    }
-
-    .column-card {
-      text-align: center;
-    }
-
-    .column-card .card-image {
-      width: 100%;
-      height: 200px;
-      background: var(--bg-subtle);
-      border-radius: 16px;
-      margin-bottom: 24px;
-      overflow: hidden;
-      box-shadow: var(--shadow-md);
-    }
-
-    .column-card .card-image img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .column-card h3 {
-      font-size: 18px;
-      color: var(--blue-accent);
-      font-weight: 600;
-      margin-bottom: 12px;
-    }
-
-    .column-card p {
-      font-size: 14px;
-      color: var(--text-gray);
-      line-height: 1.6;
-    }
-
-    .column-card p strong {
-      color: var(--text-dark);
-    }
-
-    /* ===== PARAGRAPH STYLES ===== */
-    .content-paragraph {
-      font-size: 17px;
-      line-height: 1.7;
-      color: var(--text-gray);
-      margin-bottom: 22px;
-      text-align: left;
-    }
-
-    .content-paragraph strong {
-      color: var(--text-dark);
-      font-weight: 600;
-    }
-
-    .content-paragraph.highlight {
-      font-size: 18px;
-      font-weight: 500;
-      color: var(--blue-dark);
-    }
-
-    /* ===== IMAGE CONTAINER ===== */
-    .image-container {
-      width: 100%;
-      max-width: 480px;
-      height: 360px;
-      border-radius: 20px;
-      overflow: hidden;
-      background: var(--bg-white);
-      box-shadow:
-        0 0 60px 20px rgba(17, 169, 230, 0.20),
-        0 0 100px 40px rgba(10, 179, 140, 0.12),
-        0 10px 40px rgba(0, 0, 0, 0.1);
-      position: relative;
-    }
-
-    .image-container img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-
-    .image-container .image-placeholder {
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(135deg, var(--bg-subtle) 0%, var(--bg-light) 100%);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .image-placeholder-icon {
-      width: 50px;
-      height: 50px;
-      margin-bottom: 12px;
-      color: var(--text-light);
-    }
-
-    .image-placeholder-text {
-      font-size: 13px;
-      color: var(--text-light);
-    }
-
-    .floating-badge {
-      position: absolute;
-      background: white;
-      border-radius: 12px;
-      padding: 12px 18px;
-      box-shadow: var(--shadow-md);
-      font-size: 14px;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      color: var(--text-dark);
-      z-index: 10;
-    }
-
-    .floating-badge.top-right {
-      top: 20px;
-      right: -15px;
-    }
-
-    .floating-badge.bottom-left {
-      bottom: 25px;
-      left: -15px;
-    }
-
-    .floating-badge .badge-number {
-      color: #ef4444;
-      font-weight: 700;
-    }
-
-    .floating-badge svg {
-      width: 18px;
-      height: 18px;
-      color: var(--blue-accent);
-    }
-
-    /* ===== STATS CARDS ===== */
-    .stats-row {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 35px;
-      width: 100%;
-      max-width: 950px;
-    }
-
-    .stat-card {
-      background: var(--bg-white);
-      border-radius: 20px;
-      padding: 40px 30px;
-      box-shadow: var(--shadow-md);
-      text-align: center;
-      border: 1px solid var(--bg-subtle);
-    }
-
-    .stat-number {
-      font-size: 48px;
-      font-weight: 700;
-      color: var(--blue-accent);
-      line-height: 1;
-      margin-bottom: 10px;
-    }
-
-    .stat-label {
-      font-size: 14px;
-      color: var(--text-gray);
-      font-weight: 500;
-    }
-
-    /* ===== VARIANT: 4 STATS ===== */
-    .stats-row-4 {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 25px;
-      width: 100%;
-      max-width: 1050px;
-    }
-
-    .stats-row-4 .stat-card {
-      padding: 30px 20px;
-    }
-
-    .stats-row-4 .stat-number {
-      font-size: 36px;
-    }
-
-    .stats-row-4 .stat-label {
-      font-size: 13px;
-    }
-
-    /* ===== TABLE STYLES ===== */
-    .table-container {
-      width: 100%;
-      max-width: 1050px;
-    }
-
-    .comparison-table {
-      width: 100%;
-      border-collapse: collapse;
-      border-radius: 16px;
-      overflow: hidden;
-      box-shadow: var(--shadow-md);
-    }
-
-    .comparison-table th {
-      background: var(--blue-primary);
-      color: white;
-      padding: 20px 30px;
-      font-weight: 600;
-      font-size: 15px;
-    }
-
-    .comparison-table th:first-child {
-      text-align: center;
-    }
-
-    .comparison-table th:nth-child(2),
-    .comparison-table th:nth-child(3) {
-      text-align: left;
-    }
-
-    .comparison-table td {
-      padding: 24px 30px;
-      border-bottom: 1px solid var(--bg-subtle);
-      font-size: 14px;
-      background: var(--bg-white);
-    }
-
-    .comparison-table tr:last-child td {
-      border-bottom: none;
-    }
-
-    .comparison-table td:first-child {
-      font-weight: 600;
-      color: var(--text-dark);
-      text-align: center;
-      vertical-align: middle;
-      background: var(--bg-light);
-    }
-
-    .comparison-table td:nth-child(2),
-    .comparison-table td:nth-child(3) {
-      text-align: left;
-      vertical-align: top;
-    }
-
-    .comparison-table ul {
-      list-style: none;
-      padding: 0;
-    }
-
-    .comparison-table li {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      margin-bottom: 10px;
-      line-height: 1.5;
-      color: var(--text-gray);
-    }
-
-    .comparison-table li:last-child {
-      margin-bottom: 0;
-    }
-
-    .comparison-table li::before {
-      content: '';
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--blue-accent);
-      flex-shrink: 0;
-      margin-top: 6px;
-    }
-
-    /* ===== FEATURE GRID (4 items, 2x2) ===== */
-    .feature-grid-4 {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 50px 80px;
-      width: 100%;
-      max-width: 1000px;
-    }
-
-    .feature-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 20px;
-      text-align: left;
-    }
-
-    .feature-icon {
-      width: 64px;
-      height: 64px;
-      border-radius: 18px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      background: var(--blue-primary);
-      color: white;
-      box-shadow: var(--shadow-sm);
-    }
-
-    .feature-icon svg {
-      width: 30px;
-      height: 30px;
-    }
-
-    .feature-content h4 {
-      font-size: 18px;
-      font-weight: 600;
-      color: var(--text-dark);
-      margin-bottom: 10px;
-    }
-
-    .feature-content p {
-      font-size: 14px;
-      color: var(--text-gray);
-      line-height: 1.6;
-    }
-
-    /* ===== VALUE DETAIL SLIDE ===== */
-    .value-detail-layout {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 80px;
-      width: 100%;
-      max-width: 1150px;
-      align-items: center;
-      transform: scale(1.15);
-      transform-origin: center center;
-    }
-
-    .value-detail-content {
-      text-align: left;
-    }
-
-    .value-detail-content h2 {
-      font-size: 38px;
-      font-weight: 700;
-      background: linear-gradient(90deg, var(--gradient-blue-start), var(--gradient-green-end));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      margin-bottom: 30px;
-      line-height: 1.2;
-    }
-
-    .value-detail-list {
-      list-style: none;
-    }
-
-    .value-detail-list li {
-      display: flex;
-      align-items: flex-start;
-      gap: 16px;
-      font-size: 17px;
-      color: var(--text-dark);
-      margin-bottom: 20px;
-      line-height: 1.5;
-    }
-
-    .value-detail-list li:last-child {
-      margin-bottom: 0;
-    }
-
-    .value-detail-list .check-icon {
-      width: 26px;
-      height: 26px;
-      flex-shrink: 0;
-      color: var(--blue-accent);
-      margin-top: 2px;
-    }
-
-    .value-detail-visual {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .value-image-container {
-      width: 100%;
-      max-width: 520px;
-      border-radius: 20px;
-      overflow: hidden;
-      background: var(--bg-white);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      z-index: 1;
-      box-shadow:
-        0 0 60px 20px rgba(17, 169, 230, 0.25),
-        0 0 100px 40px rgba(10, 179, 140, 0.15),
-        0 10px 40px rgba(0, 0, 0, 0.1);
-    }
-
-    .value-image-container img {
-      width: 100%;
-      height: auto;
-      object-fit: contain;
-      display: block;
-    }
-
-    /* ===== PROCESS TIMELINE ===== */
-    .process-timeline {
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      gap: 40px;
-      width: 100%;
-      max-width: 900px;
-    }
-
-    .process-step {
-      text-align: center;
-      flex: 1;
-      max-width: 260px;
-    }
-
-    .step-number {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      background: var(--gradient-brand-horizontal);
-      color: white;
-      font-size: 32px;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 24px;
-      box-shadow: var(--shadow-md);
-    }
-
-    .step-title {
-      font-size: 20px;
-      font-weight: 600;
-      color: var(--text-dark);
-      margin-bottom: 10px;
-    }
-
-    .step-duration {
-      font-size: 14px;
-      color: var(--blue-accent);
-      font-weight: 600;
-      margin-bottom: 14px;
-    }
-
-    .step-description {
-      font-size: 14px;
-      color: var(--text-gray);
-      line-height: 1.6;
-    }
-
-    .step-arrow {
-      font-size: 24px;
-      color: var(--text-light);
-      margin-top: 30px;
-      flex-shrink: 0;
-    }
-
-    /* ===== REQUIREMENTS LIST ===== */
-    .requirements-box {
-      background: var(--bg-light);
-      border-radius: 20px;
-      padding: 45px 55px;
-      border-left: 5px solid var(--blue-accent);
-      text-align: left;
-      width: 100%;
-      max-width: 750px;
-    }
-
-    .requirements-box h4 {
-      font-size: 22px;
-      font-weight: 600;
-      color: var(--text-dark);
-      margin-bottom: 30px;
-    }
-
-    .requirements-box ul {
-      list-style: none;
-    }
-
-    .requirements-box li {
-      display: flex;
-      align-items: center;
-      gap: 18px;
-      padding: 16px 0;
-      font-size: 17px;
-      color: var(--text-gray);
-      border-bottom: 1px solid var(--bg-subtle);
-    }
-
-    .requirements-box li:last-child {
-      border-bottom: none;
-    }
-
-    .requirements-box li .check-icon {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      background: var(--gradient-brand-horizontal);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .requirements-box li .check-icon svg {
-      width: 16px;
-      height: 16px;
-      color: white;
-    }
-
-    /* ===== LOGO ===== */
-    .company-logo {
-      position: absolute;
-      bottom: 35px;
-      right: 50px;
-      height: 30px;
-    }
-
-    .company-logo img {
-      height: 100%;
-      width: auto;
-    }
-
-    /* ===== IMPLANTATION MAP ===== */
-    .implantation-container {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 30px;
-      width: 100%;
-      max-width: 1050px;
-      margin: -20px auto 0;
-      padding: 0;
-    }
-
-    .slide-inner:has(.implantation-container) .slide-title {
-      margin-bottom: 10px;
-    }
-
-    .implantation-na {
-      height: 560px;
-      width: auto;
-      object-fit: contain;
-    }
-
-    .implantation-eu {
-      height: 560px;
-      width: auto;
-      object-fit: contain;
-    }
-
-    /* ===== ANCRAGE FRANCE LAYOUT ===== */
-    .ancrage-layout {
-      display: flex;
-      align-items: center;
-      gap: 60px;
-      width: 100%;
-      max-width: 1100px;
-      margin: 0 auto;
-    }
-
-    .ancrage-text {
-      flex: 0 0 42%;
-    }
-
-    .ancrage-text p {
-      font-size: 17px;
-      line-height: 1.7;
-      color: var(--text-gray);
-      text-align: left;
-    }
-
-    .ancrage-text p strong {
-      color: var(--text-dark);
-    }
-
-    .ancrage-map {
-      flex: 1;
-      display: flex;
-      justify-content: center;
-    }
-
-    .ancrage-map img {
-      height: 540px;
-      width: auto;
-      object-fit: contain;
-    }
-
-    /* ===== FAQ CARDS ===== */
-    .faq-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 36px;
-      width: 100%;
-      max-width: 1100px;
-    }
-
-    .faq-card {
-      background: var(--bg-white);
-      border-radius: 18px;
-      padding: 38px 44px;
-      box-shadow: var(--shadow-sm);
-      border: 1px solid var(--bg-subtle);
-      text-align: left;
-    }
-
-    .faq-card h4 {
-      font-size: 17px;
-      font-weight: 600;
-      color: var(--blue-accent);
-      margin-bottom: 16px;
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .faq-card h4 svg {
-      width: 26px;
-      height: 26px;
-      flex-shrink: 0;
-    }
-
-    .faq-card p {
-      font-size: 15px;
-      color: var(--text-gray);
-      line-height: 1.7;
-    }
-
-    /* ===== IDEAL WORLD CARDS ===== */
-    .ideal-card .card-image {
-      background: linear-gradient(135deg, #e0f4f8 0%, #e3f9ed 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .ideal-card .card-image svg {
-      width: 65px;
-      height: 65px;
-      color: var(--blue-accent);
-    }
-
-    /* ===== LAYOUT: 4 COLUMNS ===== */
-    .four-columns {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 30px;
-      width: 100%;
-      max-width: 1200px;
-    }
-
-    .four-columns .column-card .card-image {
-      height: 160px;
-    }
-
-    .four-columns .column-card h3 {
-      font-size: 15px;
-    }
-
-    .four-columns .column-card p {
-      font-size: 13px;
-    }
-
-    /* ===== KEYBOARD HINT ===== */
-    .keyboard-hint {
-      position: fixed;
-      bottom: 25px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 12px;
-      color: var(--text-light);
-      display: flex;
-      align-items: center;
-      gap: 20px;
-    }
-
-    .key {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 3px 8px;
-      background: var(--bg-subtle);
-      border-radius: 4px;
-      font-family: monospace;
-      font-size: 11px;
-      margin: 0 2px;
-      cursor: pointer;
-      transition: all 0.15s ease;
-      user-select: none;
-    }
-
-    .key:hover {
-      background: var(--blue-primary);
-      color: white;
-    }
-
-    .key:active {
-      transform: scale(0.95);
-    }
-
-    /* ===== ANIMATIONS ===== */
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(25px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .slide.active .slide-title,
-    .slide.active .cover-title,
-    .slide.active .value-detail-content h2 {
-      animation: fadeInUp 0.5s ease forwards;
-    }
-
-    .slide.active .slide-subtitle,
-    .slide.active .cover-subtitle {
-      animation: fadeInUp 0.5s ease 0.1s forwards;
-      opacity: 0;
-      animation-fill-mode: forwards;
-    }
-
-    .slide.active .content-paragraph {
-      animation: fadeInUp 0.5s ease forwards;
-      opacity: 0;
-    }
-
-    .slide.active .content-paragraph:nth-child(2) { animation-delay: 0.1s; }
-    .slide.active .content-paragraph:nth-child(3) { animation-delay: 0.15s; }
-    .slide.active .content-paragraph:nth-child(4) { animation-delay: 0.2s; }
-
-    .slide.active .column-card,
-    .slide.active .stat-card,
-    .slide.active .faq-card,
-    .slide.active .feature-item,
-    .slide.active .process-step {
-      animation: fadeInUp 0.5s ease forwards;
-      opacity: 0;
-    }
-
-    .slide.active .column-card:nth-child(1),
-    .slide.active .stat-card:nth-child(1),
-    .slide.active .feature-item:nth-child(1) { animation-delay: 0.15s; }
-    .slide.active .column-card:nth-child(2),
-    .slide.active .stat-card:nth-child(2),
-    .slide.active .feature-item:nth-child(2) { animation-delay: 0.25s; }
-    .slide.active .column-card:nth-child(3),
-    .slide.active .stat-card:nth-child(3),
-    .slide.active .feature-item:nth-child(3) { animation-delay: 0.35s; }
-    .slide.active .feature-item:nth-child(4) { animation-delay: 0.45s; }
-
-    .slide.active .process-step:nth-of-type(1) { animation-delay: 0.15s; }
-    .slide.active .process-step:nth-of-type(2) { animation-delay: 0.30s; }
-    .slide.active .process-step:nth-of-type(3) { animation-delay: 0.45s; }
-
-    .slide.active .faq-card:nth-child(1) { animation-delay: 0.1s; }
-    .slide.active .faq-card:nth-child(2) { animation-delay: 0.2s; }
-    .slide.active .faq-card:nth-child(3) { animation-delay: 0.3s; }
-    .slide.active .faq-card:nth-child(4) { animation-delay: 0.4s; }
-
-    .slide.active .value-detail-list li {
-      animation: fadeInUp 0.5s ease forwards;
-      opacity: 0;
-    }
-
-    .slide.active .value-detail-list li:nth-child(1) { animation-delay: 0.15s; }
-    .slide.active .value-detail-list li:nth-child(2) { animation-delay: 0.25s; }
-    .slide.active .value-detail-list li:nth-child(3) { animation-delay: 0.35s; }
-    .slide.active .value-detail-list li:nth-child(4) { animation-delay: 0.45s; }
-
-    .slide.active .testimonial-card {
-      animation: fadeInUp 0.5s ease forwards;
-      opacity: 0;
-    }
-    .slide.active .testimonial-card:nth-child(1) { animation-delay: 0.15s; }
-    .slide.active .testimonial-card:nth-child(2) { animation-delay: 0.3s; }
-    .slide.active .testimonial-card:nth-child(3) { animation-delay: 0.45s; }
-
-    .slide.active .requirements-box li {
-      animation: fadeInUp 0.5s ease forwards;
-      opacity: 0;
-    }
-    .slide.active .requirements-box li:nth-child(1) { animation-delay: 0.15s; }
-    .slide.active .requirements-box li:nth-child(2) { animation-delay: 0.25s; }
-    .slide.active .requirements-box li:nth-child(3) { animation-delay: 0.35s; }
-
-    /* ===== INTRODUCTION SLIDE - HERO LAYOUT ===== */
-    .slide-introduction {
-      padding: 0;
-    }
-
-    .slide-introduction .slide-inner {
-      transform: scale(1.0);
-      justify-content: flex-start;
-      padding-top: 0;
-      max-width: none;
-      width: 100%;
-    }
-
-    .intro-hero {
-      width: 100vw;
-      max-width: none;
-      height: 70vh;
-      position: relative;
-      overflow: hidden;
-      margin-bottom: 30px;
-    }
-
-    .intro-hero-collage {
-      display: flex;
-      width: max-content;
-      height: 100%;
-      animation: scrollCarousel 45s linear infinite;
-    }
-
-    .intro-hero-collage img {
-      width: auto;
-      height: 100%;
-      object-fit: contain;
-      flex-shrink: 0;
-    }
-
-    @keyframes scrollCarousel {
-      0% { transform: translateX(0); }
-      100% { transform: translateX(-50%); }
-    }
-
-    .intro-hero::after {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: linear-gradient(
-        180deg,
-        rgba(0, 61, 121, 0.25) 0%,
-        rgba(0, 0, 0, 0.05) 30%,
-        rgba(0, 0, 0, 0.05) 60%,
-        rgba(0, 0, 0, 0.2) 100%
-      );
-      pointer-events: none;
-    }
-
-    .intro-hero-logo {
-      position: absolute;
-      top: 30px; left: 40px; z-index: 3;
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      padding: 16px 24px;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .intro-hero-logo img {
-      height: 44px;
-      width: auto;
-      display: block;
-    }
-
-    .intro-title-band {
-      position: absolute;
-      bottom: 140px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 3;
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      padding: 20px 60px;
-      border-radius: 12px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-    }
-
-    .intro-offer-title {
-      font-size: 42px;
-      font-weight: 700;
-      text-align: center;
-      letter-spacing: -0.5px;
-      margin: 0;
-      background: linear-gradient(90deg, var(--gradient-blue-start), var(--gradient-green-end));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .intro-stats {
-      position: absolute;
-      bottom: 0; left: 0; right: 0; z-index: 2;
-      background: rgba(255, 255, 255, 0.85);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      display: flex;
-      justify-content: center;
-      gap: 0;
-      padding: 28px 60px;
-    }
-
-    .intro-stat-card {
-      background: transparent;
-      padding: 16px 70px;
-      text-align: center;
-      border-right: 1px solid #e0e0e0;
-    }
-
-    .intro-stat-card:last-child {
-      border-right: none;
-    }
-
-    .intro-stat-number {
-      font-size: 48px;
-      font-weight: 700;
-      color: var(--blue-accent);
-      line-height: 1;
-      margin-bottom: 8px;
-    }
-
-    .intro-stat-label {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--text-gray);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .intro-content {
-      text-align: center;
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: 0 40px;
-    }
-
-    .intro-pitch {
-      font-size: 18px;
-      color: var(--text-dark);
-      line-height: 1.7;
-      margin: 0;
-      font-weight: 400;
-    }
-
-    @keyframes fadeInUpCentered {
-      from { opacity: 0; transform: translateX(-50%) translateY(25px); }
-      to { opacity: 1; transform: translateX(-50%) translateY(0); }
-    }
-
-    .slide-introduction.active .intro-hero-logo {
-      animation: fadeInUp 0.5s ease 0.1s forwards;
-      opacity: 0;
-    }
-    .slide-introduction.active .intro-title-band {
-      animation: fadeInUpCentered 0.6s ease 0.3s forwards;
-      opacity: 0;
-    }
-    .slide-introduction.active .intro-stat-card {
-      animation: fadeInUp 0.5s ease forwards;
-      opacity: 0;
-    }
-    .slide-introduction.active .intro-stat-card:nth-child(1) { animation-delay: 0.5s; }
-    .slide-introduction.active .intro-stat-card:nth-child(2) { animation-delay: 0.65s; }
-    .slide-introduction.active .intro-stat-card:nth-child(3) { animation-delay: 0.8s; }
-    .slide-introduction.active .intro-pitch {
-      animation: fadeInUp 0.5s ease 1s forwards;
-      opacity: 0;
-    }
-
-    /* ===== TESTIMONIAL FLIP CARDS ===== */
-    .testimonial-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 40px;
-      width: 100%;
-      max-width: 1100px;
-      perspective: 1000px;
-    }
-
-    .testimonial-grid.count-3 { grid-template-columns: repeat(3, 1fr); }
-    .testimonial-grid.count-2 { grid-template-columns: repeat(2, 1fr); max-width: 750px; margin: 0 auto; }
-    .testimonial-grid.count-1 { grid-template-columns: 1fr; max-width: 400px; margin: 0 auto; }
-
-    .testimonial-card {
-      position: relative;
-      height: 420px;
-      cursor: pointer;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    .testimonial-card:hover {
-      transform: translateY(-8px);
-    }
-
-    .testimonial-card-inner {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      transition: transform 0.6s ease;
-      transform-style: preserve-3d;
-    }
-
-    .testimonial-card:hover .testimonial-card-inner {
-      transform: rotateY(180deg);
-    }
-
-    .testimonial-front,
-    .testimonial-back {
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      backface-visibility: hidden;
-      border-radius: 24px;
-      overflow: hidden;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.08);
-      border: 1px solid rgba(255,255,255,0.1);
-    }
-
-    .testimonial-front {
-      background: var(--bg-white);
-    }
-
-    .testimonial-front > img {
-      width: 100%; height: 100%;
-      object-fit: cover;
-      transition: transform 0.4s ease;
-    }
-
-    .testimonial-card:hover .testimonial-front > img {
-      transform: scale(1.05);
-    }
-
-    .testimonial-front::after {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: linear-gradient(
-        180deg,
-        rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.05) 35%,
-        rgba(0,0,0,0.05) 55%, rgba(0,61,121,0.4) 85%,
-        rgba(0,61,121,0.6) 100%
-      );
-      pointer-events: none;
-      transition: opacity 0.3s ease;
-    }
-
-    .testimonial-logo {
-      position: absolute;
-      top: 20px; left: 20px;
-      background: rgba(255,255,255,0.95);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      padding: 12px 16px;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.15), 0 0 0 1px rgba(255,255,255,0.5);
-      z-index: 2;
-      transition: transform 0.3s ease;
-    }
-
-    .testimonial-card:hover .testimonial-logo {
-      transform: scale(1.05);
-    }
-
-    .testimonial-logo img {
-      height: 30px;
-      width: auto;
-      max-width: 110px;
-      object-fit: contain;
-      display: block;
-    }
-
-    .testimonial-title {
-      position: absolute;
-      bottom: 80px;
-      left: 24px; right: 24px;
-      font-size: 19px;
-      font-weight: 700;
-      color: white;
-      line-height: 1.35;
-      margin: 0;
-      z-index: 2;
-      text-shadow: 0 2px 12px rgba(0,0,0,0.5), 0 1px 3px rgba(0,0,0,0.3);
-      letter-spacing: -0.01em;
-    }
-
-    .testimonial-hint {
-      position: absolute;
-      bottom: 20px; right: 20px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: linear-gradient(135deg, var(--blue-primary), var(--gradient-green-end));
-      color: white;
-      font-size: 13px;
-      font-weight: 600;
-      padding: 10px 18px;
-      border-radius: 24px;
-      z-index: 2;
-      box-shadow: 0 4px 16px rgba(0, 61, 121, 0.4);
-      transition: all 0.3s ease;
-    }
-
-    .testimonial-hint svg {
-      width: 16px; height: 16px;
-      animation: spin-hint 2s ease-in-out infinite;
-    }
-
-    @keyframes spin-hint {
-      0%, 100% { transform: rotate(0deg); }
-      50% { transform: rotate(180deg); }
-    }
-
-    .testimonial-card:hover .testimonial-hint {
-      opacity: 0;
-      transform: translateY(10px);
-    }
-
-    .testimonial-back {
-      background: linear-gradient(180deg, #ffffff 0%, #f8f9fa 100%);
-      transform: rotateY(180deg);
-      display: flex;
-      flex-direction: column;
-      padding: 28px 28px 24px;
-      text-align: left;
-      position: relative;
-    }
-
-    .testimonial-stars {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      width: 100%;
-      margin-bottom: 16px;
-    }
-
-    .testimonial-stars-icons {
-      color: #fbbf24;
-      font-size: 18px;
-      letter-spacing: 3px;
-    }
-
-    .testimonial-date {
-      color: var(--text-gray);
-      font-size: 13px;
-      font-style: italic;
-    }
-
-    .testimonial-quote-section {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-
-    .testimonial-quote::before {
-      content: '\201C';
-      font-size: 28px;
-      font-family: Georgia, serif;
-      color: var(--blue-primary);
-      opacity: 0.5;
-      margin-right: 4px;
-      line-height: 1;
-    }
-
-    .testimonial-quote::after {
-      content: '\201D';
-      font-size: 28px;
-      font-family: Georgia, serif;
-      color: var(--blue-primary);
-      opacity: 0.5;
-      margin-left: 4px;
-      line-height: 1;
-    }
-
-    .testimonial-quote {
-      color: var(--text-dark);
-      font-size: 15px;
-      font-style: italic;
-      line-height: 1.75;
-      margin-bottom: 16px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .testimonial-cta {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: linear-gradient(135deg, var(--blue-primary), var(--gradient-green-end));
-      color: white;
-      font-size: 14px;
-      font-weight: 600;
-      text-decoration: none;
-      margin-top: 12px;
-      padding: 10px 20px;
-      border-radius: 24px;
-      box-shadow: 0 4px 12px rgba(0,61,121,0.3);
-      transition: all 0.2s ease;
-    }
-
-    .testimonial-cta::after {
-      content: '\2192';
-      display: inline-block;
-      transition: transform 0.2s ease;
-    }
-
-    .testimonial-cta:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 16px rgba(0,61,121,0.4);
-    }
-
-    .testimonial-cta:hover::after {
-      transform: translateX(4px);
-    }
-
-    .testimonial-author {
-      margin-top: auto;
-      padding-top: 16px;
-      border-top: 1px solid #e5e5e5;
-    }
-
-    .testimonial-name {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--text-dark);
-      display: block;
-      margin-bottom: 2px;
-    }
-
-    .testimonial-position {
-      font-size: 12px;
-      color: var(--text-gray);
-      display: block;
-      margin-bottom: 8px;
-    }
-
-    .testimonial-company-logo {
-      height: 22px;
-      width: auto;
-      max-width: 70px;
-      object-fit: contain;
-      opacity: 0.7;
-      display: block;
-    }
-
-    /* ===== CTA BOX ===== */
-    .cta-box {
-      background: linear-gradient(90deg, #0fa7e2, #0ab38c);
-      border-radius: 12px;
-      padding: 24px 40px;
-      margin-top: 20px;
-    }
-
-    .cta-text {
-      font-size: 20px;
-      font-weight: 600;
-      color: white;
-      text-align: center;
-    }
-
-    /* ===== VARIANT: 6 ITEMS (2x3 grid) ===== */
-    .three-columns.two-rows {
-      grid-template-rows: repeat(2, auto);
-      gap: 30px 40px;
-    }
-
-    .three-columns.two-rows .column-card .card-image {
-      height: 160px;
-    }
-
-    .three-columns.two-rows .column-card h3 {
-      font-size: 16px;
-    }
-
-    .three-columns.two-rows .column-card p {
-      font-size: 13px;
-    }
-  </style>
+  <link rel="stylesheet" href="https://ayming-france.github.io/assets/slides/slides.css">
 </head>
 <body>
 
@@ -1770,7 +123,7 @@
               <span class="badge-number">50 598</span> MP d&eacute;clar&eacute;es en 2024
             </div>
             <div class="floating-badge bottom-left">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              <i data-lucide="help-circle"></i>
               88% sont des TMS
             </div>
           </div>
@@ -1905,7 +258,7 @@
           <!-- Ideal 1 -->
           <div class="column-card ideal-card">
             <div class="card-image">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+              <i data-lucide="archive"></i>
             </div>
             <h3>Reconstitution compl&egrave;te des historiques</h3>
             <p>Retrouver et reconstituer l'exposition du salari&eacute; poste par poste, m&ecirc;me quand les documents ont disparu</p>
@@ -1914,7 +267,7 @@
           <!-- Ideal 2 -->
           <div class="column-card ideal-card">
             <div class="card-image">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+              <i data-lucide="clipboard-check"></i>
             </div>
             <h3>&Eacute;valuation m&eacute;dicale et r&eacute;ponse argument&eacute;e</h3>
             <p>Des m&eacute;decins experts qui &eacute;valuent le lien de causalit&eacute;, des r&eacute;serves motiv&eacute;es dans le d&eacute;lai de 30 jours</p>
@@ -1923,7 +276,7 @@
           <!-- Ideal 3 -->
           <div class="column-card ideal-card">
             <div class="card-image">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+              <i data-lucide="shield-check"></i>
             </div>
             <h3>Suivi complet et coordination juridique</h3>
             <p>Accompagnement de bout en bout jusqu'&agrave; la d&eacute;cision, coordination avec des cabinets d'avocats ind&eacute;pendants</p>
@@ -1997,7 +350,7 @@
           <!-- Theme 1 -->
           <div class="feature-item">
             <div class="feature-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+              <i data-lucide="archive"></i>
             </div>
             <div class="feature-content">
               <h4>Reconstitution de l'historique d'exposition</h4>
@@ -2008,7 +361,7 @@
           <!-- Theme 2 -->
           <div class="feature-item">
             <div class="feature-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+              <i data-lucide="stethoscope"></i>
             </div>
             <div class="feature-content">
               <h4>&Eacute;valuation m&eacute;dicale du lien de causalit&eacute;</h4>
@@ -2019,7 +372,7 @@
           <!-- Theme 3 -->
           <div class="feature-item">
             <div class="feature-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              <i data-lucide="timer"></i>
             </div>
             <div class="feature-content">
               <h4>R&eacute;ponse argument&eacute;e dans le d&eacute;lai de 30 jours</h4>
@@ -2030,7 +383,7 @@
           <!-- Theme 4 -->
           <div class="feature-item">
             <div class="feature-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+              <i data-lucide="shield-check"></i>
             </div>
             <div class="feature-content">
               <h4>Suivi du dossier jusqu'&agrave; la d&eacute;cision</h4>
@@ -2053,27 +406,19 @@
 
           <ul class="value-detail-list">
             <li>
-              <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <polyline points="20 6 9 17 4 12"/>
-              </svg>
+              <i data-lucide="check" class="check-icon"></i>
               Collecte documentaire approfondie (fiches de poste, &eacute;valuations des risques, attestations de formation)
             </li>
             <li>
-              <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <polyline points="20 6 9 17 4 12"/>
-              </svg>
+              <i data-lucide="check" class="check-icon"></i>
               Ateliers et entretiens avec les &eacute;quipes internes pour reconstituer les conditions pass&eacute;es
             </li>
             <li>
-              <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <polyline points="20 6 9 17 4 12"/>
-              </svg>
+              <i data-lucide="check" class="check-icon"></i>
               Visite sur site pour observer les conditions de travail actuelles
             </li>
             <li>
-              <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <polyline points="20 6 9 17 4 12"/>
-              </svg>
+              <i data-lucide="check" class="check-icon"></i>
               Reconstitution des expositions anciennes m&ecirc;me avec archives lacunaires ou d&eacute;truites
             </li>
           </ul>
@@ -2098,21 +443,15 @@
 
           <ul class="value-detail-list">
             <li>
-              <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <polyline points="20 6 9 17 4 12"/>
-              </svg>
+              <i data-lucide="check" class="check-icon"></i>
               Analyse du lien entre la maladie d&eacute;clar&eacute;e et les conditions de travail r&eacute;elles
             </li>
             <li>
-              <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <polyline points="20 6 9 17 4 12"/>
-              </svg>
+              <i data-lucide="check" class="check-icon"></i>
               V&eacute;rification des crit&egrave;res des tableaux de maladies professionnelles (d&eacute;signation, d&eacute;lai, liste des travaux)
             </li>
             <li>
-              <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <polyline points="20 6 9 17 4 12"/>
-              </svg>
+              <i data-lucide="check" class="check-icon"></i>
               Formulation de r&eacute;serves motiv&eacute;es m&eacute;dicalement et scientifiquement &eacute;tay&eacute;es
             </li>
           </ul>
@@ -2137,21 +476,15 @@
 
           <ul class="value-detail-list">
             <li>
-              <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <polyline points="20 6 9 17 4 12"/>
-              </svg>
+              <i data-lucide="check" class="check-icon"></i>
               Prise en charge du questionnaire d&egrave;s sa r&eacute;ception par la CPAM
             </li>
             <li>
-              <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <polyline points="20 6 9 17 4 12"/>
-              </svg>
+              <i data-lucide="check" class="check-icon"></i>
               Coordination de la collecte documentaire et des expertises dans le d&eacute;lai imparti
             </li>
             <li>
-              <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <polyline points="20 6 9 17 4 12"/>
-              </svg>
+              <i data-lucide="check" class="check-icon"></i>
               Strat&eacute;gie de remplissage adapt&eacute;e au formulaire en ligne (contournement des biais du formulaire)
             </li>
           </ul>
@@ -2176,27 +509,19 @@
 
           <ul class="value-detail-list">
             <li>
-              <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <polyline points="20 6 9 17 4 12"/>
-              </svg>
+              <i data-lucide="check" class="check-icon"></i>
               Suivi de l'instruction du dossier aupr&egrave;s de la CPAM
             </li>
             <li>
-              <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <polyline points="20 6 9 17 4 12"/>
-              </svg>
+              <i data-lucide="check" class="check-icon"></i>
               Pr&eacute;paration des observations compl&eacute;mentaires lors de la consultation du dossier contradictoire (d&eacute;lai de 10 jours)
             </li>
             <li>
-              <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <polyline points="20 6 9 17 4 12"/>
-              </svg>
+              <i data-lucide="check" class="check-icon"></i>
               Coordination avec un cabinet d'avocats ind&eacute;pendants choisi d'un commun accord pour les pr&eacute;conisations juridiques
             </li>
             <li>
-              <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <polyline points="20 6 9 17 4 12"/>
-              </svg>
+              <i data-lucide="check" class="check-icon"></i>
               Information du client &agrave; chaque &eacute;tape du processus
             </li>
           </ul>
@@ -2228,7 +553,7 @@
                 <p class="testimonial-title">STEF am&eacute;liore le pilotage des arr&ecirc;ts de travail et des risques professionnels</p>
                 <div class="testimonial-logo"><img src="https://www.ayming.fr/wp-content/uploads/sites/3/2025/08/STEF_logo.png" alt="STEF"></div>
                 <span class="testimonial-hint">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                  <i data-lucide="refresh-cw"></i>
                   D&eacute;couvrir
                 </span>
               </div>
@@ -2255,7 +580,7 @@
                 <p class="testimonial-title">Colruyt s&eacute;curise ses co&ucirc;ts li&eacute;s aux AT/MP</p>
                 <div class="testimonial-logo"><img src="https://www.ayming.fr/wp-content/uploads/sites/3/2025/08/colruyt-logo-png-transparent-e1759137868909.png" alt="Colruyt"></div>
                 <span class="testimonial-hint">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                  <i data-lucide="refresh-cw"></i>
                   D&eacute;couvrir
                 </span>
               </div>
@@ -2282,7 +607,7 @@
                 <p class="testimonial-title">GEMFOS r&eacute;duit les accidents du travail et ma&icirc;trise la gestion des absences</p>
                 <div class="testimonial-logo"><img src="https://www.ayming.fr/wp-content/uploads/sites/3/2025/05/GEMFOS-1-e1759136624846.jpg" alt="GEMFOS"></div>
                 <span class="testimonial-hint">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                  <i data-lucide="refresh-cw"></i>
                   D&eacute;couvrir
                 </span>
               </div>
@@ -2356,7 +681,7 @@
           <!-- FAQ 1 -->
           <div class="faq-card">
             <h4>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+              <i data-lucide="users"></i>
               Notre RH peut r&eacute;pondre seul
             </h4>
             <p>La connaissance des postes actuels ne suffit pas. Il faut reconstituer des expositions anciennes (10-20 ans), &eacute;valuer le lien de causalit&eacute; m&eacute;dicalement, et formuler des r&eacute;serves qui tiennent face &agrave; la CPAM. C'est un travail pluridisciplinaire.</p>
@@ -2365,7 +690,7 @@
           <!-- FAQ 2 -->
           <div class="faq-card">
             <h4>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              <i data-lucide="euro"></i>
               Le co&ucirc;t est-il justifi&eacute; ?
             </h4>
             <p>Le co&ucirc;t moyen d'une MP reconnue (TMS) va de 12 780 &agrave; 52 759 EUR, imput&eacute; sur votre compte employeur pendant 3 ans. Sans compter les co&ucirc;ts indirects (4 &agrave; 10 fois les co&ucirc;ts directs). L'accompagnement est un investissement face &agrave; cet impact r&eacute;current.</p>
@@ -2374,7 +699,7 @@
           <!-- FAQ 3 -->
           <div class="faq-card">
             <h4>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"/></svg>
+              <i data-lucide="bar-chart-3"></i>
               On n'a que quelques questionnaires par an
             </h4>
             <p>Un seul TMS de la coiffe des rotateurs reconnu &agrave; tort repr&eacute;sente 52 759 EUR. Ayming traite 200+ questionnaires par an et propose un accompagnement adapt&eacute; au volume de chaque entreprise. Pas d'engagement de volume minimum.</p>
@@ -2383,7 +708,7 @@
           <!-- FAQ 4 -->
           <div class="faq-card">
             <h4>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              <i data-lucide="help-circle"></i>
               L'employeur n'est pas oblig&eacute; de r&eacute;pondre
             </h4>
             <p>C'est exact, il n'y a pas d'obligation l&eacute;gale. Mais ne pas r&eacute;pondre signifie que la CPAM d&eacute;cide sans votre point de vue, et les frais sont imput&eacute;s sur votre compte. R&eacute;pondre de mani&egrave;re argument&eacute;e est le seul moyen de faire valoir votre position.</p>
@@ -2447,25 +772,19 @@
           <ul>
             <li>
               <span class="check-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                  <polyline points="20 6 9 17 4 12"/>
-                </svg>
+                <i data-lucide="check"></i>
               </span>
               Acc&egrave;s aux questionnaires CPAM re&ccedil;us sur les 12-24 derniers mois
             </li>
             <li>
               <span class="check-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                  <polyline points="20 6 9 17 4 12"/>
-                </svg>
+                <i data-lucide="check"></i>
               </span>
               Entretien avec l'&eacute;quipe RH (2 heures)
             </li>
             <li>
               <span class="check-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                  <polyline points="20 6 9 17 4 12"/>
-                </svg>
+                <i data-lucide="check"></i>
               </span>
               Historique des MP reconnues et de leur impact sur le taux AT/MP
             </li>
@@ -2488,165 +807,11 @@
     <span><span class="key" id="key-fullscreen">F</span> Plein &eacute;cran</span>
   </div>
 
-  <script>
-    let currentSlide = 0;
-    const slides = document.querySelectorAll('.slide');
-    const navItems = document.querySelectorAll('.nav-item');
-    const counter = document.querySelector('.slide-counter');
-    const totalSlides = slides.length;
+  <script src="https://ayming-france.github.io/assets/slides/slides.js"></script>
 
-    const valueDetailStartIndex = 7;
-    const valueDetailCount = 4;
-
-    function updateSlide() {
-      slides.forEach((slide, index) => {
-        slide.classList.remove('active');
-        if (index === currentSlide) {
-          slide.classList.add('active');
-        }
-      });
-
-      navItems.forEach((item) => {
-        item.classList.remove('active');
-        const navSlideIndex = parseInt(item.dataset.slide);
-
-        const isValueDetailSlide = currentSlide >= valueDetailStartIndex &&
-                                   currentSlide < valueDetailStartIndex + valueDetailCount;
-
-        if (navSlideIndex === currentSlide ||
-            (isValueDetailSlide && navSlideIndex === 6)) {
-          item.classList.add('active');
-        }
-      });
-
-      counter.innerHTML = `<span class="current">${currentSlide + 1}</span>/${totalSlides}`;
-
-      const introSlide = document.querySelector('.slide-introduction');
-      if (introSlide && slides[currentSlide] === introSlide) {
-        setTimeout(animateIntroCounters, 500);
-      }
-    }
-
-    function nextSlide() {
-      if (currentSlide < totalSlides - 1) {
-        currentSlide++;
-        updateSlide();
-      }
-    }
-
-    function prevSlide() {
-      if (currentSlide > 0) {
-        currentSlide--;
-        updateSlide();
-      }
-    }
-
-    function goToSlide(index) {
-      if (index >= 0 && index < totalSlides) {
-        currentSlide = index;
-        updateSlide();
-      }
-    }
-
-    function getSlideFromNav(navIndex) {
-      return navIndex;
-    }
-
-    document.addEventListener('keydown', (e) => {
-      switch(e.key) {
-        case 'ArrowRight':
-        case ' ':
-          e.preventDefault();
-          nextSlide();
-          break;
-        case 'ArrowLeft':
-          prevSlide();
-          break;
-        case 'f':
-        case 'F':
-          toggleFullscreen();
-          break;
-        case 'Home':
-          goToSlide(0);
-          break;
-        case 'End':
-          goToSlide(totalSlides - 1);
-          break;
-      }
-    });
-
-    navItems.forEach((item) => {
-      item.addEventListener('click', () => {
-        const navIndex = parseInt(item.dataset.slide);
-        const slideIndex = getSlideFromNav(navIndex);
-        goToSlide(slideIndex);
-      });
-    });
-
-    document.getElementById('key-prev').addEventListener('click', prevSlide);
-    document.getElementById('key-next').addEventListener('click', nextSlide);
-    document.getElementById('key-fullscreen').addEventListener('click', toggleFullscreen);
-
-    function toggleFullscreen() {
-      if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen();
-      } else {
-        document.exitFullscreen();
-      }
-    }
-
-    let touchStartX = 0;
-    let touchEndX = 0;
-
-    document.addEventListener('touchstart', (e) => {
-      touchStartX = e.changedTouches[0].screenX;
-    });
-
-    document.addEventListener('touchend', (e) => {
-      touchEndX = e.changedTouches[0].screenX;
-      handleSwipe();
-    });
-
-    function handleSwipe() {
-      const swipeThreshold = 50;
-      const diff = touchStartX - touchEndX;
-
-      if (Math.abs(diff) > swipeThreshold) {
-        if (diff > 0) {
-          nextSlide();
-        } else {
-          prevSlide();
-        }
-      }
-    }
-
-    function animateIntroCounters() {
-      const statNumbers = document.querySelectorAll('.slide-introduction.active .intro-stat-number');
-      statNumbers.forEach(el => {
-        const text = el.textContent;
-        const match = text.match(/(\d[\d\s]*)/);
-        if (match) {
-          const target = parseInt(match[1].replace(/\s/g, ''));
-          const suffix = text.replace(match[1], '');
-          animateCounter(el, target, suffix);
-        }
-      });
-    }
-
-    function animateCounter(element, target, suffix, duration = 800) {
-      const startTime = performance.now();
-      function update(currentTime) {
-        const elapsed = currentTime - startTime;
-        const progress = Math.min(elapsed / duration, 1);
-        const current = Math.floor(target * progress);
-        element.textContent = current.toLocaleString('fr-FR') + suffix;
-        if (progress < 1) requestAnimationFrame(update);
-      }
-      requestAnimationFrame(update);
-    }
-
-    updateSlide();
-  </script>
+<!-- Lucide Icons -->
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script>lucide.createIcons();</script>
 
 </body>
 </html>
